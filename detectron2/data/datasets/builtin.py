@@ -212,9 +212,29 @@ def register_all_pascal_voc(root):
         MetadataCatalog.get(name).evaluator_type = "pascal_voc"
 
 
+# ==== Predefined splits for Object365 ===========
+_PREDEFINED_SPLITS_Object365 = {}
+_PREDEFINED_SPLITS_Object365["object365"] = {
+    "object365_train": ("object365/train", "object365/annotations/objects365_train.json"),
+    "object365_val": ("object365/val", "object365/annotations/objects365_val.json"),
+}
+
+def register_all_object365(root):
+    for dataset_name, splits_per_dataset in _PREDEFINED_SPLITS_Object365.items():
+        for key, (image_root, json_file) in splits_per_dataset.items():
+            # Assume pre-defined datasets live in `./datasets`.
+            register_coco_instances(
+                key,
+                {},
+                os.path.join(root, json_file) if "://" not in json_file else json_file,
+                os.path.join(root, image_root),
+            )
+
+
 # Register them all under "./datasets"
 _root = os.getenv("DETECTRON2_DATASETS", "datasets")
 register_all_coco(_root)
 register_all_lvis(_root)
 register_all_cityscapes(_root)
 register_all_pascal_voc(_root)
+register_all_object365(_root)
